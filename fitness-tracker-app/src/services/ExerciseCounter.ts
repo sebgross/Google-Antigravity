@@ -28,7 +28,34 @@ export class ExerciseCounter {
         this.type = type;
     }
 
+    private isBodyVisible(results: Results): boolean {
+        // Check for essential upper body landmarks
+        const leftShoulder = getLandmark(results, 11);
+        const rightShoulder = getLandmark(results, 12);
+        const leftElbow = getLandmark(results, 13);
+        const rightElbow = getLandmark(results, 14);
+        const leftWrist = getLandmark(results, 15);
+        const rightWrist = getLandmark(results, 16);
+        const leftHip = getLandmark(results, 23);
+        const rightHip = getLandmark(results, 24);
+
+        // We need at least shoulders and hips to define the torso, and arms for the exercises
+        return !!(leftShoulder && rightShoulder &&
+            leftElbow && rightElbow &&
+            leftWrist && rightWrist &&
+            leftHip && rightHip);
+    }
+
     public update(results: Results): ExerciseState {
+        if (!this.isBodyVisible(results)) {
+            return {
+                count: this.count,
+                stage: null,
+                feedback: 'Please step back to show full upper body',
+                progress: 0
+            };
+        }
+
         switch (this.type) {
             case 'curl':
                 return this.countCurls(results);
@@ -46,7 +73,10 @@ export class ExerciseCounter {
         this.lastFeedback = '';
         this.leftArm = { stage: null, angle: 0 };
         this.rightArm = { stage: null, angle: 0 };
+        this.lastRepTime = 0;
     }
+
+    private lastRepTime: number = 0;
 
     private countCurls(results: Results): ExerciseState {
         const leftShoulder = getLandmark(results, 11);
@@ -59,6 +89,7 @@ export class ExerciseCounter {
 
         let feedback = this.lastFeedback;
         let activeProgress = 0;
+        const now = Date.now();
 
         // Process Left Arm
         if (leftShoulder && leftElbow && leftWrist) {
@@ -70,8 +101,11 @@ export class ExerciseCounter {
             }
             if (angle < 45 && this.leftArm.stage === 'DOWN') { // Slightly easier flexion but requires full ROM
                 this.leftArm.stage = 'UP';
-                this.count++;
-                feedback = 'Left arm curl!';
+                if (now - this.lastRepTime > 1000) { // 1s debounce to prevent double count
+                    this.count++;
+                    this.lastRepTime = now;
+                    feedback = 'Good curl!';
+                }
             }
             const progress = Math.max(0, Math.min(1, (165 - angle) / (165 - 45)));
             if (progress > activeProgress) activeProgress = progress;
@@ -87,8 +121,11 @@ export class ExerciseCounter {
             }
             if (angle < 45 && this.rightArm.stage === 'DOWN') {
                 this.rightArm.stage = 'UP';
-                this.count++;
-                feedback = 'Right arm curl!';
+                if (now - this.lastRepTime > 1000) { // 1s debounce
+                    this.count++;
+                    this.lastRepTime = now;
+                    feedback = 'Good curl!';
+                }
             }
             const progress = Math.max(0, Math.min(1, (165 - angle) / (165 - 45)));
             if (progress > activeProgress) activeProgress = progress;
@@ -113,10 +150,10 @@ export class ExerciseCounter {
         const rightElbow = getLandmark(results, 14);
         const rightWrist = getLandmark(results, 16);
 
-        if (!leftShoulder || !leftElbow || !leftWrist) return { count: this.count, stage: null, feedback: 'Body not visible', progress: 0 };
+        // Visibility check is now handled in update()
 
-        const leftAngle = calculateAngle(leftShoulder, leftElbow, leftWrist);
-        const rightAngle = (rightShoulder && rightElbow && rightWrist) ? calculateAngle(rightShoulder, rightElbow, rightWrist) : leftAngle;
+        const leftAngle = calculateAngle(leftShoulder!, leftElbow!, leftWrist!);
+        const rightAngle = calculateAngle(rightShoulder!, rightElbow!, rightWrist!);
 
         const avgAngle = (leftAngle + rightAngle) / 2;
 
@@ -139,9 +176,9 @@ export class ExerciseCounter {
         const leftElbow = getLandmark(results, 13);
         const leftWrist = getLandmark(results, 15);
 
-        if (!leftShoulder || !leftElbow || !leftWrist) return { count: this.count, stage: null, feedback: 'Body not visible', progress: 0 };
+        // Visibility check is now handled in update()
 
-        const angle = calculateAngle(leftShoulder, leftElbow, leftWrist);
+        const angle = calculateAngle(leftShoulder!, leftElbow!, leftWrist!);
 
         if (angle > 160) {
             this.leftArm.stage = 'DOWN';

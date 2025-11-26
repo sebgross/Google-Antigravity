@@ -56,6 +56,7 @@ const WorkoutScreen: React.FC<WorkoutScreenProps> = ({ config, onBack }) => {
 
                 if (currentSet >= config.targetSets) {
                     setWorkoutComplete(true);
+                    setTimeout(onBack, 1000); // Auto-exit after 1 second
                 } else {
                     setIsResting(true);
                     setTimeout(() => {
@@ -91,7 +92,7 @@ const WorkoutScreen: React.FC<WorkoutScreenProps> = ({ config, onBack }) => {
             <div className="absolute top-0 left-0 w-full z-20 p-4 flex justify-between items-center bg-gradient-to-b from-black/80 to-transparent">
                 <button onClick={onBack} className="flex items-center gap-2 p-2 pr-4 rounded-full bg-white/10 hover:bg-white/20 text-white backdrop-blur-md transition-colors">
                     <ArrowLeft size={24} />
-                    <span className="font-medium">Exit</span>
+                    <span className="font-medium">End Workout</span>
                 </button>
                 <div className="text-white font-mono text-sm bg-black/50 px-3 py-1 rounded-full backdrop-blur-md border border-white/10">
                     {config.exerciseType.toUpperCase()} • SET {currentSet}/{config.targetSets}
@@ -153,9 +154,10 @@ const WorkoutScreen: React.FC<WorkoutScreenProps> = ({ config, onBack }) => {
                         <div className="text-center animate-pulse-glow p-6 rounded-2xl bg-gold/20 border border-gold/50 backdrop-blur-md">
                             <CheckCircle className="w-16 h-16 text-gold mx-auto mb-4" />
                             <h2 className="text-3xl font-bold text-white mb-2">Workout Complete!</h2>
-                            <p className="text-gray-300">Great job crushing those {config.exerciseType}s.</p>
-                            <button onClick={onBack} className="mt-6 btn-primary w-full">
-                                Finish
+                            <p className="text-gray-300 mb-4">Great job crushing those {config.exerciseType}s.</p>
+                            <p className="text-sm text-gold/80 mb-6">Returning to menu...</p>
+                            <button onClick={onBack} className="btn-primary w-full">
+                                Finish Now
                             </button>
                         </div>
                     ) : isResting ? (
