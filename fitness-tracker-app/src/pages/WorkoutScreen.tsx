@@ -87,21 +87,21 @@ const WorkoutScreen: React.FC<WorkoutScreenProps> = ({ config, onBack }) => {
     // The callback is triggered when count increments. So we rely on the callback.
 
     return (
-        <div className="relative h-screen w-full bg-black overflow-hidden flex flex-col">
+        <div className="relative h-screen w-full bg-[var(--color-bg)] overflow-hidden flex flex-col">
             {/* Header */}
-            <div className="absolute top-0 left-0 w-full z-20 p-4 flex justify-between items-center bg-gradient-to-b from-black/80 to-transparent">
+            <div className="absolute top-0 left-0 w-full z-20 p-4 flex justify-between items-center bg-gradient-to-b from-[var(--color-bg)]/80 to-transparent">
                 <button onClick={onBack} className="flex items-center gap-2 p-2 pr-4 rounded-full bg-white/10 hover:bg-white/20 text-white backdrop-blur-md transition-colors">
                     <ArrowLeft size={24} />
                     <span className="font-medium">End Workout</span>
                 </button>
-                <div className="text-white font-mono text-sm bg-black/50 px-3 py-1 rounded-full backdrop-blur-md border border-white/10">
+                <div className="text-white font-mono text-sm bg-[var(--color-bg)]/50 px-3 py-1 rounded-full backdrop-blur-md border border-white/10">
                     {config.exerciseType.toUpperCase()} • SET {currentSet}/{config.targetSets}
                 </div>
                 <div className="w-10" /> {/* Spacer */}
             </div>
 
             {/* Main Content */}
-            <div className="flex-1 relative overflow-hidden bg-black">
+            <div className="flex-1 relative overflow-hidden bg-[var(--color-bg)]">
                 <Webcam
                     ref={webcamRef}
                     audio={false}
@@ -139,24 +139,24 @@ const WorkoutScreen: React.FC<WorkoutScreenProps> = ({ config, onBack }) => {
 
             {/* Loading Overlay */}
             {isLoading && (
-                <div className="absolute inset-0 flex items-center justify-center bg-black/80 z-30">
+                <div className="absolute inset-0 flex items-center justify-center bg-[var(--color-bg)]/80 z-30">
                     <div className="text-center">
-                        <div className="w-12 h-12 border-4 border-gold border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                        <div className="w-12 h-12 border-4 border-[var(--color-primary)] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
                         <p className="text-white font-medium">Loading AI Model...</p>
                     </div>
                 </div>
             )}
 
             {/* Stats Overlay */}
-            <div className="absolute bottom-0 left-0 w-full p-8 bg-gradient-to-t from-black via-black/80 to-transparent z-20">
+            <div className="absolute bottom-0 left-0 w-full p-8 bg-gradient-to-t from-[var(--color-bg)] via-[var(--color-bg)]/80 to-transparent z-20">
                 <div className="max-w-md mx-auto">
                     {workoutComplete ? (
-                        <div className="text-center animate-pulse-glow p-6 rounded-2xl bg-gold/20 border border-gold/50 backdrop-blur-md">
-                            <CheckCircle className="w-16 h-16 text-gold mx-auto mb-4" />
+                        <div className="text-center animate-pulse-glow p-6 rounded-2xl bg-[var(--color-primary)]/20 border border-[var(--color-primary)]/50 backdrop-blur-md">
+                            <CheckCircle className="w-16 h-16 text-[var(--color-primary)] mx-auto mb-4" />
                             <h2 className="text-3xl font-bold text-white mb-2">Workout Complete!</h2>
                             <p className="text-gray-300 mb-4">Great job crushing those {config.exerciseType}s.</p>
-                            <p className="text-sm text-gold/80 mb-6">Returning to menu...</p>
-                            <button onClick={onBack} className="btn-primary w-full">
+                            <p className="text-sm text-[var(--color-primary)]/80 mb-6">Returning to menu...</p>
+                            <button onClick={onBack} className="btn-primary w-full shadow-lg">
                                 Finish Now
                             </button>
                         </div>
@@ -177,7 +177,7 @@ const WorkoutScreen: React.FC<WorkoutScreenProps> = ({ config, onBack }) => {
                             </div>
                             <div className="glass-panel p-4 flex flex-col items-center justify-center relative overflow-hidden">
                                 <div
-                                    className="absolute bottom-0 left-0 w-full bg-gold/20 transition-all duration-300"
+                                    className="absolute bottom-0 left-0 w-full bg-[var(--color-primary)]/20 transition-all duration-300"
                                     style={{ height: `${progress * 100}%` }}
                                 />
                                 <span className="text-gray-400 text-xs uppercase tracking-wider mb-1 relative z-10">Feedback</span>
@@ -196,7 +196,6 @@ const WorkoutScreen: React.FC<WorkoutScreenProps> = ({ config, onBack }) => {
                 </div>
             </div>
         </div>
-
     );
 };
 

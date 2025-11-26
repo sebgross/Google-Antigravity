@@ -8,4 +8,5 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
+  base: "/Google-Antigravity/", // <-- Diese Zeile ist neu!
 })
