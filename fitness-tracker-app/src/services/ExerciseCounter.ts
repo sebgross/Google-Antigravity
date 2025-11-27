@@ -29,21 +29,31 @@ export class ExerciseCounter {
     }
 
     private isBodyVisible(results: Results): boolean {
-        // Check for essential upper body landmarks
-        const leftShoulder = getLandmark(results, 11);
-        const rightShoulder = getLandmark(results, 12);
-        const leftElbow = getLandmark(results, 13);
-        const rightElbow = getLandmark(results, 14);
-        const leftWrist = getLandmark(results, 15);
-        const rightWrist = getLandmark(results, 16);
-        const leftHip = getLandmark(results, 23);
-        const rightHip = getLandmark(results, 24);
+        const requiredLandmarks = [
+            11, 12, // Shoulders
+            13, 14, // Elbows
+            15, 16, // Wrists
+            23, 24, // Hips
+            25, 26  // Knees (Added for "complete body" check)
+        ];
 
-        // We need at least shoulders and hips to define the torso, and arms for the exercises
-        return !!(leftShoulder && rightShoulder &&
-            leftElbow && rightElbow &&
-            leftWrist && rightWrist &&
-            leftHip && rightHip);
+        for (const index of requiredLandmarks) {
+            const landmark = getLandmark(results, index);
+
+            // Check if landmark exists
+            if (!landmark) return false;
+
+            // Check visibility confidence (MediaPipe default is usually 0.5 threshold, let's be stricter)
+            if ((landmark.visibility ?? 0) < 0.65) return false;
+
+            // Check if landmark is within frame bounds (0-1)
+            // We allow a small margin of error (e.g., -0.05 to 1.05) to not be too annoying
+            if (landmark.x < 0.01 || landmark.x > 0.99 || landmark.y < 0.01 || landmark.y > 0.99) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public update(results: Results): ExerciseState {
@@ -51,7 +61,7 @@ export class ExerciseCounter {
             return {
                 count: this.count,
                 stage: null,
-                feedback: 'Please step back to show full upper body',
+                feedback: 'Please show full body (head to knees)',
                 progress: 0
             };
         }

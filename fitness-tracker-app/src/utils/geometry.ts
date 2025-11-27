@@ -3,6 +3,8 @@ import type { Results } from '@mediapipe/pose';
 export interface Point {
     x: number;
     y: number;
+    z?: number;
+    visibility?: number;
 }
 
 export function calculateAngle(a: Point, b: Point, c: Point): number {
